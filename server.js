@@ -3,9 +3,12 @@ if (process.env.NODE_ENV !== "production") {
 }
 const express = require("express");
 const app = express();
+const bodyparser = require("body-parser");
+
 const path = require("path");
 const expressLayout = require("express-ejs-layouts");
 const indexRouter = require("./routes/index");
+const authorRouter = require("./routes/authors");
 const mongoose = require("mongoose");
 
 mongoose.connect(process.env.DATABASE_URL, {
@@ -21,6 +24,13 @@ app.set("views", path.join(__dirname, "views"));
 app.set("layout", "layouts/layout");
 app.use(expressLayout);
 app.use(express.static("public"));
+app.use(
+  bodyparser.urlencoded({
+    limit: "10mb",
+    extended: false,
+  })
+);
 app.use("/", indexRouter);
+app.use("/authors", authorRouter);
 
-app.listen(process.env.PORT || 3000, () => console.log("Listening"));
+app.listen(process.env.PORT, () => console.log("Listening"));
